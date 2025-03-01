@@ -60,8 +60,6 @@ class Benchmark(spark: SparkSession, dataDir: String) {
     val loadEnd = System.nanoTime()
     println(s"Rows: ${df.count()}")
     println(s"Tempo total de carregamento e concatenação: ${(loadEnd - loadStart) / 1e9} s")
-    val runtime = Runtime.getRuntime
-    println(s"Memória usada após carregamento: ${(runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024)} MB")
 
     // Step 2: Calculate EMA
     println("Iniciando o cálculo da EMA...")
@@ -70,8 +68,6 @@ class Benchmark(spark: SparkSession, dataDir: String) {
     val emaEnd = System.nanoTime()
 
     println(s"Tempo total de cálculo da EMA: ${(emaEnd - emaStart) / 1e9} s")
-    val runtime2 = Runtime.getRuntime
-    println(s"Memória usada após cálculo da EMA: ${(runtime2.totalMemory() - runtime2.freeMemory()) / (1024 * 1024)} MB")
 
     // Step 3: Show results
     processedDf.show(5)
