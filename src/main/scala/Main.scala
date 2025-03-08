@@ -4,7 +4,6 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.log4j.{Level, Logger}
 import java.nio.file.{Files, Paths}
 
-
 object Main {
 
   def computeEMA(df: DataFrame, windowSizes: List[Int]): DataFrame = {
@@ -30,7 +29,6 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-
     Logger.getRootLogger.setLevel(Level.OFF)
     Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
     Logger.getLogger("org.apache.hadoop").setLevel(Level.ERROR)
@@ -38,8 +36,8 @@ object Main {
 
     val spark = SparkSession.builder()
       .appName("StockAnalysis")
-      .master("spark://spark-master:7077")
-//      .master("local[*]") // Use "local[*]" para rodar localmente
+//      .master("spark://spark-master:7077")
+      .master("local[*]") // Use "local[*]" para rodar localmente
       .config("spark.driver.bindAddress", "127.0.0.1") // Evita erro de conexão no Docker
       .getOrCreate()
 
@@ -54,21 +52,25 @@ object Main {
 
     println(s"${files.length} found to process...")
 
+    var dataframes:List[DataFrame] = List()
+
+    var start = System.nanoTime()
     // Process each file independently
     files.foreach { file =>
       println(s"Processing file: $file")
-
-      // load file
-      var start = System.nanoTime()
       val df = spark.read.option("header", "true").option("inferSchema", "true").csv(file)
-      println(s"Time taken to load file in memory: ${(System.nanoTime() - start) / 1e9} s")
 
       // process file
       start = System.nanoTime()
       val processedDf = computeEMA(df, List(10, 20, 50, 100))
-      println(s"Time taken to compute EMA: ${(System.nanoTime() - start) / 1e9} s")
 
-      processedDf.show(5)
+      // Append the processed DataFrame to the list
+      dataframes = processedDf :: dataframes
     }
+
+    println(s"Execution time: ${(System.nanoTime() - start) / 1e5} s\n-----------\n")
+//    dataframes.foreach { df=>
+//      df.show(5)
+//    }
   }
 }
