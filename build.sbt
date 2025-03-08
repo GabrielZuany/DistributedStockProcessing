@@ -4,7 +4,11 @@ ThisBuild / scalaVersion := "2.13.16"
 
 lazy val root = (project in file("."))
   .settings(
-    name := "DistributedStockProcessing"
+    name := "DistributedStockProcessing",
+    run / fork := true,
+    run / javaOptions ++= Seq(
+      "--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED"
+    )
   )
 
 val sparkVersion = "3.5.5"
