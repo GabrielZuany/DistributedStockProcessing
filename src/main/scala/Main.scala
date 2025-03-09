@@ -91,14 +91,13 @@ object Main {
 
     var dataframes:List[DataFrame] = List()
 
-    var start = System.nanoTime()
+    var start = System.nanoTime
     // Process each file independently
     files.foreach { file =>
       println(s"Processing file: $file")
       val df = spark.read.option("header", "true").option("inferSchema", "true").csv(file)
 
       // process file
-      start = System.nanoTime()
       var processedDf = computeEMA(df, List(10, 20, 50, 100))
       processedDf = computeRSI(processedDf) // Calculate RSI
 
@@ -106,7 +105,7 @@ object Main {
       dataframes = processedDf :: dataframes
     }
 
-    println(s"Execution time: ${(System.nanoTime() - start)} s\n-----------\n")
+    println(s"Execution time: ${(System.nanoTime - start) / 1e9d} s\n-----------\n")
     dataframes.foreach { df=>
       df.show(10)
     }
